@@ -10,7 +10,10 @@ var wiredep = require('wiredep');
 
 var Generator = module.exports = function Generator(args, options) {
   yeoman.generators.Base.apply(this, arguments);
-  this.argument('appname', { type: String, required: false });
+  this.argument('appname', {
+    type: String,
+    required: false
+  });
   this.appname = this.appname || path.basename(process.cwd());
   this.appname = this._.camelize(this._.slugify(this._.humanize(this.appname)));
 
@@ -82,7 +85,7 @@ var Generator = module.exports = function Generator(args, options) {
     args: args
   });
 
-  this.on('end', function () {
+  this.on('end', function() {
     this.installDependencies({
       skipInstall: this.options['skip-install'],
       callback: this._injectDependencies.bind(this)
@@ -153,8 +156,26 @@ Generator.prototype.askForCompass = function askForCompass() {
     name: 'compass',
     message: 'Would you like to use Sass (with Compass)?',
     default: true
-  }], function (props) {
+  }], function(props) {
     this.compass = props.compass;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForLess = function askForLess() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'confirm',
+    name: 'less',
+    message: 'Would you like to use Less?',
+    default: true,
+    when: function(props) {
+      return !this.compass;
+    }
+  }], function(props) {
+    this.less = props.less;
 
     cb();
   }.bind(this));
@@ -174,10 +195,10 @@ Generator.prototype.askForBootstrap = function askForBootstrap() {
     name: 'compassBootstrap',
     message: 'Would you like to use the Sass version of Twitter Bootstrap?',
     default: true,
-    when: function (props) {
+    when: function(props) {
       return props.bootstrap && compass;
     }
-  }], function (props) {
+  }], function(props) {
     this.bootstrap = props.bootstrap;
     this.compassBootstrap = props.compassBootstrap;
 
@@ -211,8 +232,10 @@ Generator.prototype.askForModules = function askForModules() {
     }]
   }];
 
-  this.prompt(prompts, function (props) {
-    var hasMod = function (mod) { return props.modules.indexOf(mod) !== -1; };
+  this.prompt(prompts, function(props) {
+    var hasMod = function(mod) {
+      return props.modules.indexOf(mod) !== -1;
+    };
     this.resourceModule = hasMod('resourceModule');
     this.cookiesModule = hasMod('cookiesModule');
     this.sanitizeModule = hasMod('sanitizeModule');
@@ -236,7 +259,7 @@ Generator.prototype.askForModules = function askForModules() {
     }
 
     if (angMods.length) {
-      this.env.options.angularDeps = "\n  " + angMods.join(",\n  ") +"\n";
+      this.env.options.angularDeps = "\n  " + angMods.join(",\n  ") + "\n";
     }
 
     cb();
@@ -256,10 +279,10 @@ Generator.prototype.askForMongo = function askForMongo() {
     name: 'mongoPassportUser',
     message: 'Would you like to include a Passport authentication boilerplate?',
     default: false,
-    when: function (props) {
+    when: function(props) {
       return props.mongo;
     }
-  }], function (props) {
+  }], function(props) {
     this.mongo = props.mongo;
     this.mongoPassportUser = props.mongoPassportUser;
 
@@ -271,7 +294,7 @@ Generator.prototype.readIndex = function readIndex() {
   this.ngRoute = this.env.options.ngRoute;
   this.jade = this.env.options.jade;
 
-  if(this.jade) {
+  if (this.jade) {
     this.indexFile = this.engine(this.read('../../templates/views/jade/index.jade'), this);
   } else {
     this.indexFile = this.engine(this.read('../../templates/views/html/index.html'), this);
@@ -281,6 +304,9 @@ Generator.prototype.readIndex = function readIndex() {
 Generator.prototype.bootstrapFiles = function bootstrapFiles() {
   var sass = this.compass;
   var mainFile = 'main.' + (sass ? 's' : '') + 'css';
+  if (this.less) {
+    mainFile = 'main.less';
+  }
 
   if (this.bootstrap && !sass) {
     this.copy('fonts/glyphicons-halflings-regular.eot', 'app/fonts/glyphicons-halflings-regular.eot');
@@ -300,7 +326,7 @@ function generateJadeBlock(blockType, optimizedPath, filesBlock, searchPath, pre
     if (util.isArray(searchPath)) {
       searchPath = '{' + searchPath.join(',') + '}';
     }
-    blockSearchPath = '(' + searchPath +  ')';
+    blockSearchPath = '(' + searchPath + ')';
   }
 
   blockStart = '\n' + prefix + '<!-- build:' + blockType + blockSearchPath + ' ' + optimizedPath + ' -->\n';
@@ -308,17 +334,17 @@ function generateJadeBlock(blockType, optimizedPath, filesBlock, searchPath, pre
   return blockStart + filesBlock + blockEnd;
 }
 
-function appendJade(jade, tag, blocks){
+function appendJade(jade, tag, blocks) {
   var mark = "//- build:" + tag,
-      position = jade.indexOf(mark);
+    position = jade.indexOf(mark);
   return [jade.slice(0, position), blocks, jade.slice(position)].join('');
 }
 
 function appendFilesToJade(jadeOrOptions, fileType, optimizedPath, sourceFileList, attrs, searchPath) {
   var blocks, updatedContent,
-      jade = jadeOrOptions,
-      prefix = '    ',
-      files = '';
+    jade = jadeOrOptions,
+    prefix = '    ',
+    files = '';
 
   if (typeof jadeOrOptions === 'object') {
     jade = jadeOrOptions.html;
@@ -330,14 +356,14 @@ function appendFilesToJade(jadeOrOptions, fileType, optimizedPath, sourceFileLis
   }
 
   if (fileType === 'js') {
-    sourceFileList.forEach(function (el) {
-      files += prefix + '<script ' + (attrs||'') + 'src="' + el + '"></script>\n';
+    sourceFileList.forEach(function(el) {
+      files += prefix + '<script ' + (attrs || '') + 'src="' + el + '"></script>\n';
     });
     blocks = generateJadeBlock('js', optimizedPath, files, searchPath, prefix);
     updatedContent = appendJade(jade, 'body', blocks);
   } else if (fileType === 'css') {
-    sourceFileList.forEach(function (el) {
-      files += prefix + '<link ' + (attrs||'') + 'rel="stylesheet" href="' + el  + '">\n';
+    sourceFileList.forEach(function(el) {
+      files += prefix + '<link ' + (attrs || '') + 'rel="stylesheet" href="' + el + '">\n';
     });
     blocks = generateJadeBlock('css', optimizedPath, files, searchPath, prefix);
     updatedContent = appendJade(jade, 'head', blocks);
@@ -350,12 +376,12 @@ var copyScriptWithEnvOptions = function copyScriptWithEnvOptions(that, fileToCop
     minsafe = '',
     sourceFolder = 'javascript';
 
-  if(that.env.options.coffee) {
+  if (that.env.options.coffee) {
     ext = 'coffee';
     sourceFolder = 'coffeescript';
   }
 
-  if(that.env.options.minsafe) {
+  if (that.env.options.minsafe) {
     minsafe = '-min';
   }
   that.copy('../../templates/' + sourceFolder + minsafe + '/' + fileToCopy + '.' + ext, destinationFolder + fileToCopy + '.' + ext);
@@ -402,10 +428,10 @@ Generator.prototype.createIndex = function createIndex() {
 };
 
 Generator.prototype.addJadeViews = function addHtmlJade() {
-  if(this.jade) {
+  if (this.jade) {
     this.copy('../../templates/views/jade/partials/main.jade', 'app/views/partials/main.jade');
     this.copy('../../templates/views/jade/partials/navbar.jade', 'app/views/partials/navbar.jade');
-    if(this.mongoPassportUser) {
+    if (this.mongoPassportUser) {
       this.copy('../../templates/views/jade/partials/login.jade', 'app/views/partials/login.jade');
       this.copy('../../templates/views/jade/partials/signup.jade', 'app/views/partials/signup.jade');
       this.copy('../../templates/views/jade/partials/settings.jade', 'app/views/partials/settings.jade');
@@ -415,10 +441,10 @@ Generator.prototype.addJadeViews = function addHtmlJade() {
 };
 
 Generator.prototype.addHtmlViews = function addHtmlViews() {
-  if(!this.jade) {
+  if (!this.jade) {
     this.copy('../../templates/views/html/partials/main.html', 'app/views/partials/main.html');
     this.copy('../../templates/views/html/partials/navbar.html', 'app/views/partials/navbar.html');
-    if(this.mongoPassportUser) {
+    if (this.mongoPassportUser) {
       this.copy('../../templates/views/html/partials/login.html', 'app/views/partials/login.html');
       this.copy('../../templates/views/html/partials/signup.html', 'app/views/partials/signup.html');
       this.copy('../../templates/views/html/partials/settings.html', 'app/views/partials/settings.html');
@@ -427,14 +453,14 @@ Generator.prototype.addHtmlViews = function addHtmlViews() {
   }
 };
 
-Generator.prototype.packageFiles = function () {
+Generator.prototype.packageFiles = function() {
   this.coffee = this.env.options.coffee;
   this.template('../../templates/common/_bower.json', 'bower.json');
   this.template('../../templates/common/_package.json', 'package.json');
   this.template('../../templates/common/Gruntfile.js', 'Gruntfile.js');
 };
 
-Generator.prototype.imageFiles = function () {
+Generator.prototype.imageFiles = function() {
   this.sourceRoot(path.join(__dirname, 'templates'));
   this.directory('images', 'app/images', true);
 };
@@ -469,7 +495,7 @@ Generator.prototype._injectDependencies = function _injectDependencies() {
   }
 };
 
-Generator.prototype.serverFiles = function () {
+Generator.prototype.serverFiles = function() {
   this.template('../../templates/express/server.js', 'server.js');
   this.copy('../../templates/express/jshintrc', 'lib/.jshintrc');
   this.template('../../templates/express/controllers/api.js', 'lib/controllers/api.js');
@@ -485,29 +511,29 @@ Generator.prototype.serverFiles = function () {
   this.template('../../templates/express/config/env/test.js', 'lib/config/env/test.js');
 };
 
-Generator.prototype.mongoFiles = function () {
+Generator.prototype.mongoFiles = function() {
 
   if (!this.mongo) {
-    return;  // Skip if disabled.
+    return; // Skip if disabled.
   }
   this.env.options.mongo = this.mongo;
 
   this.template('../../templates/express/config/dummydata.js', 'lib/config/dummydata.js');
   this.template('../../templates/express/models/thing.js', 'lib/models/thing.js');
 
-  if(!this.mongoPassportUser) {
-    return;  // Skip if disabled.
+  if (!this.mongoPassportUser) {
+    return; // Skip if disabled.
   }
   this.env.options.mongoPassportUser = this.mongoPassportUser;
 
   // frontend
-  copyScriptWithEnvOptions(this, 'controllers/login',        'app/scripts/');
-  copyScriptWithEnvOptions(this, 'controllers/signup',       'app/scripts/');
-  copyScriptWithEnvOptions(this, 'controllers/settings',     'app/scripts/');
+  copyScriptWithEnvOptions(this, 'controllers/login', 'app/scripts/');
+  copyScriptWithEnvOptions(this, 'controllers/signup', 'app/scripts/');
+  copyScriptWithEnvOptions(this, 'controllers/settings', 'app/scripts/');
 
-  copyScriptWithEnvOptions(this, 'services/auth',            'app/scripts/');
-  copyScriptWithEnvOptions(this, 'services/session',         'app/scripts/');
-  copyScriptWithEnvOptions(this, 'services/user',            'app/scripts/');
+  copyScriptWithEnvOptions(this, 'services/auth', 'app/scripts/');
+  copyScriptWithEnvOptions(this, 'services/session', 'app/scripts/');
+  copyScriptWithEnvOptions(this, 'services/user', 'app/scripts/');
 
   copyScriptWithEnvOptions(this, 'directives/mongooseError', 'app/scripts/');
 
@@ -521,5 +547,5 @@ Generator.prototype.mongoFiles = function () {
   this.template('../../templates/express/controllers/session.js', 'lib/controllers/session.js');
   this.template('../../templates/express/controllers/users.js', 'lib/controllers/users.js');
   // tests
-  this.template('../../templates/express/test/user/model.js', 'test/server/user/model.js');  
+  this.template('../../templates/express/test/user/model.js', 'test/server/user/model.js');
 };
