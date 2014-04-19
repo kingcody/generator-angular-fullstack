@@ -1,3 +1,41 @@
+<a name="v1.4.2"></a>
+### v1.4.2 (2014-04-16)
+
+
+#### Bug Fixes
+
+* **gen:** typo in heroku generator was preventing it from working on unix based systems ([9d3b5738](http://github.com/DaftMonk/generator-angular-fullstack/commit/9d3b5738528497f74d37d22c304b0d46cd5007fa))
+
+<a name="v1.4.1"></a>
+### v1.4.1 (2014-04-15)
+
+
+#### Bug Fixes
+
+* **server:** 
+  * grunt test was incorrectly using dev config, fixes #179 ([62d8492f](http://github.com/DaftMonk/generator-angular-fullstack/commit/62d8492fd9fcfde653bab0f65b46f9961b8016bc))
+  * emails are no longer case sensitive ([dafd8db1](https://github.com/DaftMonk/generator-angular-fullstack/commit/dafd8db1f529b86322ef60f65897761cef92841a))
+
+<a name="v1.4.0"></a>
+## v1.4.0 (2014-04-13)
+
+#### Features
+
+* **server:** updated Express to v4.x
+* **app:** matching angular dependencies to the latest verison, now that bower excludes pre-releases ([94c0c636](http://github.com/DaftMonk/generator-angular-fullstack/commit/94c0c63691976eaf7136c33365f611b465ba7f61))
+* **gen:** 
+  * Added `angular-fullstack:openshift` generator, for deploying your app to OpenShift
+  * Added `angular-fullstack:heroku` generator, which improves upon the former `:deploy` generator for deploying to Heroku
+
+#### Bug Fixes
+
+* **server:** fixed possible DB flushing when mochaTest is called by watch, first call 'env:test' task before 'mochaTest'
+([2f0320fe](http://github.com/DaftMonk/generator-angular-fullstack/commit/2f0320feb89f3a5f1757f8adcae4b8c0d5599c95))
+
+#### Breaking Changes
+
+* The `angular-fullstack:deploy` generator is deprecated. Instead use `angular-fullstack:heroku` or `angular-fullstack:openshift`.
+
 <a name="v1.3.3"></a>
 ### v1.3.3 (2014-03-29)
 
