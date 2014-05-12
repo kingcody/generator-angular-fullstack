@@ -272,6 +272,7 @@ module.exports = function (grunt) {
         }
       }
     },<% } else if (less) { %>
+    
     // Compiles Less to CSS and generates necessary files if requested
     less: {
       options: {
@@ -287,8 +288,7 @@ module.exports = function (grunt) {
           ext: '.css'
         }]
       }
-    },
-    <% } %>
+    },<% } %>
 
     // Renames files for browser caching purposes
     rev: {
