@@ -76,7 +76,7 @@ module.exports = function (grunt) {
       },<% } else if (less) { %>
       less: {
         files: ['<%%= yeoman.app %>/styles/{,*/}*.less'],
-        tasks: ['less:dist', 'autoprefixer']
+        tasks: ['newer:less:dist', 'autoprefixer']
       },<% } else { %>
       styles: {
         files: ['<%%= yeoman.app %>/styles/{,*/}*.css'],
@@ -272,22 +272,22 @@ module.exports = function (grunt) {
         }
       }
     },<% } else if (less) { %>
-      // Compiles Less to CSS and generates necessary files if requested
-      less: {
-        options: {
-            compile: true,
-            paths: ['<%%= yeoman.app %>/bower_components', '<%%= yeoman.app %>/libs']
-          },
-          dist: {
-          files: [{
-            expand: true,
-            cwd: '<%%= yeoman.app %>/styles',
-            src: '{,*/}*.less',
-            dest: '.tmp/styles/',
-            ext: '.css'
-          }]
-        }
+    // Compiles Less to CSS and generates necessary files if requested
+    less: {
+      options: {
+        compile: true,
+        paths: ['<%%= yeoman.app %>/bower_components', '<%%= yeoman.app %>/libs']
       },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.app %>/styles',
+          src: '{,*/}*.less',
+          dest: '.tmp/styles/',
+          ext: '.css'
+        }]
+      }
+    },
     <% } %>
 
     // Renames files for browser caching purposes
@@ -437,7 +437,7 @@ module.exports = function (grunt) {
       server: [<% if (coffee) { %>
         'coffee:dist',<% } %><% if (compass) { %>
         'compass:server'<% } else if (less) { %>
-        'less:dist' <% } else { %>
+        'newer:less:dist' <% } else { %>
         'copy:styles'<% } %>
       ],
       test: [<% if (coffee) { %>
