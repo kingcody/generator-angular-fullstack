@@ -303,9 +303,11 @@ Generator.prototype.readIndex = function readIndex() {
 
 Generator.prototype.bootstrapFiles = function bootstrapFiles() {
   var sass = this.compass;
-  var mainFile = 'main.' + (sass ? 's' : '') + 'css';
+  var mainFile = 'main.';
   if (this.less) {
-    mainFile = 'main.less';
+    mainFile += 'less';
+  } else {
+    mainFile += (sass ? 's' : '') + 'css';
   }
 
   if (this.bootstrap && !sass) {
