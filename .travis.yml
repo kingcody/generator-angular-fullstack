@@ -2,12 +2,11 @@ sudo: false
 language: node_js
 node_js:
   - '0.12'
-env:
-  global:
-    - SAUCE_USERNAME=fullstack_ci
-    - SAUCE_ACCESS_KEY=1a527ca6-4aa5-4618-86ce-0278bf158cbf
+addons:
+  sauce_connect:
+    username: "fullstack_ci"
+    access_key: "1a527ca6-4aa5-4618-86ce-0278bf158cbf"
 before_install:
-  - ./scripts/sauce_connect_setup.sh
   - gem update --system
   - gem install sass --version "=3.3.7"
   - npm install -g bower grunt-cli
