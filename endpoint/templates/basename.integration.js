@@ -1,18 +1,36 @@
 'use strict';
 
 var app = require('<%= relativeRequire('server/app') %>');
-var request = require('supertest');<% if(filters.models) { %>
+var supertest = require('supertest');<% if(filters.models) { %>
 
 var new<%= classedName %>;<% } %>
 
 describe('<%= classedName %> API:', function() {
+  var request, csrfToken;
+
+  beforeEach(function(done) {
+    /* get new session and csrf token */
+    csrfToken = '';
+    request = supertest.agent(app);
+    request.head('/')
+      .end(function(err, res) {
+        if (err) { return done(err); }
+        if (res.headers['set-cookie']) {
+          res.headers['set-cookie'].forEach(function(v) {
+            if (v.match(/^XSRF-TOKEN=/)) {
+              csrfToken = decodeURIComponent(v.split(';')[0].split('=')[1]);
+            }
+          });
+        }
+        done();
+      });
+  });
 
   describe('GET <%= route %>', function() {
     var <%= cameledName %>s;
 
     beforeEach(function(done) {
-      request(app)
-        .get('<%= route %>')
+      request.get('<%= route %>')
         .expect(200)
         .expect('Content-Type', /json/)
         .end(function(err, res) {
@@ -32,8 +50,8 @@ describe('<%= classedName %> API:', function() {
 
   describe('POST <%= route %>', function() {
     beforeEach(function(done) {
-      request(app)
-        .post('<%= route %>')
+      request.post('<%= route %>')
+        .set('X-XSRF-TOKEN', csrfToken)
         .send({
           name: 'New <%= classedName %>',
           info: 'This is the brand new <%= cameledName %>!!!'
@@ -60,8 +78,7 @@ describe('<%= classedName %> API:', function() {
     var <%= cameledName %>;
 
     beforeEach(function(done) {
-      request(app)
-        .get('<%= route %>/' + new<%= classedName %>._id)
+      request.get('<%= route %>/' + new<%= classedName %>._id)
         .expect(200)
         .expect('Content-Type', /json/)
         .end(function(err, res) {
@@ -88,8 +105,8 @@ describe('<%= classedName %> API:', function() {
     var updated<%= classedName %>
 
     beforeEach(function(done) {
-      request(app)
-        .put('<%= route %>/' + new<%= classedName %>._id)
+      request.put('<%= route %>/' + new<%= classedName %>._id)
+        .set('X-XSRF-TOKEN', csrfToken)
         .send({
           name: 'Updated <%= classedName %>',
           info: 'This is the updated <%= cameledName %>!!!'
@@ -119,8 +136,8 @@ describe('<%= classedName %> API:', function() {
   describe('DELETE <%= route %>/:id', function() {
 
     it('should respond with 204 on successful removal', function(done) {
-      request(app)
-        .delete('<%= route %>/' + new<%= classedName %>._id)
+      request.delete('<%= route %>/' + new<%= classedName %>._id)
+        .set('X-XSRF-TOKEN', csrfToken)
         .expect(204)
         .end(function(err, res) {
           if (err) {
@@ -131,8 +148,8 @@ describe('<%= classedName %> API:', function() {
     });
 
     it('should respond with 404 when <%= cameledName %> does not exist', function(done) {
-      request(app)
-        .delete('<%= route %>/' + new<%= classedName %>._id)
+      request.delete('<%= route %>/' + new<%= classedName %>._id)
+        .set('X-XSRF-TOKEN', csrfToken)
         .expect(404)
         .end(function(err, res) {
           if (err) {
