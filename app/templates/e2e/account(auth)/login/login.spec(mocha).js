@@ -64,6 +64,7 @@ describe('Login View', function() {
           email: testUser.email,
           password: 'badPassword'
         });
+        page.waitForSubmitted();
 
         <%= does("browser.getCurrentUrl()") %>.eventually.equal(config.baseUrl + '/login');
 

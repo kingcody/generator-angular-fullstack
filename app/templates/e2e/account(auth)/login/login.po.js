@@ -21,6 +21,12 @@ var LoginPage = function() {
 
     this.form.submit.click();
   };
+
+  this.waitForSubmitted = function() {
+    browser.wait(function() {
+      return this.form.evaluate('submitted');
+    }.bind(this));
+  };
 };
 
 module.exports = new LoginPage();

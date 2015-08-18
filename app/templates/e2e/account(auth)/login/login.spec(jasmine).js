@@ -54,6 +54,7 @@ describe('Login View', function() {
         email: testUser.email,
         password: 'badPassword'
       });
+      page.waitForSubmitted();
 
       expect(browser.getCurrentUrl()).toBe(config.baseUrl + '/login');
 

@@ -52,6 +52,7 @@ describe('Signup View', function() {
 
     it('should indicate signup failures', function() {
       page.signup(testUser);
+      page.waitForSubmitted();
 
       expect(browser.getCurrentUrl()).toBe(config.baseUrl + '/signup');
       expect(page.form.email.getAttribute('class')).toContain('ng-invalid-mongoose');
