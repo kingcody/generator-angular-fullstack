@@ -1,6 +1,6 @@
 'use strict';
 
-var app = require('<%= relativeRequire('server/app') %>');
+var app = require('<%= relativeRequire('server/index.js') %>');
 var supertest = require('supertest');<% if(filters.models) { %>
 
 var new<%= classedName %>;<% } %>

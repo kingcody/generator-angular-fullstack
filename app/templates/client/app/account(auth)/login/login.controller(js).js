@@ -6,8 +6,6 @@ angular.module('<%= scriptAppName %>')
     $scope.errors = {};
 
     $scope.login = function(form) {
-      $scope.submitted = true;
-
       if (form.$valid) {
         Auth.login({
           email: $scope.user.email,
@@ -19,7 +17,10 @@ angular.module('<%= scriptAppName %>')
         })
         .catch(function(err) {
           $scope.errors.other = err.message;
-        });
+        })
+        .finally(function() { $scope.submitted = true; });
+      } else {
+        $scope.submitted = true;
       }
     };
 <% if (filters.oauth) {%>

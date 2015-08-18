@@ -5,8 +5,6 @@ angular.module '<%= scriptAppName %>'
   $scope.user = {}
   $scope.errors = {}
   $scope.register = (form) ->
-    $scope.submitted = true
-
     if form.$valid
       # Account created, redirect to home
       Auth.createUser
@@ -31,6 +29,12 @@ angular.module '<%= scriptAppName %>'
           angular.forEach err.fields, (field) ->
             form[field].$setValidity 'mongoose', false
             $scope.errors[field] = err.message<% } %>
+
+      .finally ->
+        $scope.submitted = true
+
+    else
+      $scope.submitted = true
 <% if (filters.oauth) {%>
   $scope.loginOauth = (provider) ->
     $window.location.href = '/auth/' + provider<% } %>

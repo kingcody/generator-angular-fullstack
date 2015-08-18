@@ -5,8 +5,6 @@ angular.module '<%= scriptAppName %>'
   $scope.user = {}
   $scope.errors = {}
   $scope.login = (form) ->
-    $scope.submitted = true
-
     if form.$valid
       # Logged in, redirect to home
       Auth.login
@@ -18,6 +16,12 @@ angular.module '<%= scriptAppName %>'
 
       .catch (err) ->
         $scope.errors.other = err.message
+
+      .finally ->
+        $scope.submitted = true
+
+    else
+      $scope.submitted = true
 <% if (filters.oauth) {%>
   $scope.loginOauth = (provider) ->
     $window.location.href = '/auth/' + provider<% } %>

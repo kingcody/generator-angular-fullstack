@@ -6,8 +6,6 @@ angular.module('<%= scriptAppName %>')
     $scope.errors = {};
 
     $scope.register = function(form) {
-      $scope.submitted = true;
-
       if (form.$valid) {
         Auth.createUser({
           name: $scope.user.name,
@@ -35,7 +33,10 @@ angular.module('<%= scriptAppName %>')
               $scope.errors[field] = err.message;
             });
           }<% } %>
-        });
+        })
+        .finally(function() { $scope.submitted = true; });
+      } else {
+        $scope.submitted = true;
       }
     };
 <% if (filters.oauth) {%>
