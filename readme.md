@@ -9,6 +9,7 @@ Generated with defaults: http://fullstack-demo.herokuapp.com/.
 
 Source code: https://github.com/DaftMonk/fullstack-demo
 
+
 ## Usage
 
 Install `yo`, `grunt-cli`, `bower`, and `generator-angular-fullstack`:
